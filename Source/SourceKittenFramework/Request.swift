@@ -366,6 +366,16 @@ public enum Request {
         return fromSourceKit(sourcekitd_response_get_value(response!)) as! [String: SourceKitRepresentable]
     }
 
+    public func sendAsync(completion: @escaping ([String: SourceKitRepresentable]) -> Void) {
+        initializeSourceKitFailable
+        sourcekitd_send_request(sourcekitObject.sourcekitdObject!, nil) { response in
+            // TODO error
+            let result = fromSourceKit(sourcekitd_response_get_value(response!)) as! [String: SourceKitRepresentable]
+            completion(result)
+            sourcekitd_response_dispose(response!)
+        }
+    }
+
     /// A enum representation of SOURCEKITD_ERROR_*
     public enum Error: Swift.Error, CustomStringConvertible {
         case connectionInterrupted(String?)
